@@ -44,7 +44,6 @@ static BOOL CALLBACK enum_locale_ex_proc( HMODULE module, LPCWSTR type,
 BOOL WINAPI EnumSystemLocalesEx( LOCALE_ENUMPROCEX proc, DWORD flags, LPARAM lparam, LPVOID reserved )
 {
     struct enum_locale_ex_data data;
-    HMODULE kernel32_handle = GetModuleHandleW(L"kernel32.dll");
 
     if (reserved)
     {
@@ -54,6 +53,7 @@ BOOL WINAPI EnumSystemLocalesEx( LOCALE_ENUMPROCEX proc, DWORD flags, LPARAM lpa
     data.proc   = proc;
     data.flags  = flags;
     data.lparam = lparam;
+    /* Cached handle (k32_vista.h): GetModuleHandleW would take the loader lock */
     EnumResourceLanguagesW( kernel32_handle, (LPCWSTR)RT_STRING,
                             (LPCWSTR)MAKEINTRESOURCE((LOCALE_SNAME >> 4) + 1),
                             enum_locale_ex_proc, (LONG_PTR)&data );

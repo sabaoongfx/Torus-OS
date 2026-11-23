@@ -22,3 +22,11 @@
 
 /* Internal Kernel32 Header */
 #include "../include/kernel32.h"
+
+/* Module handle of kernel32.dll, set at DLL_PROCESS_ATTACH (kernel32: client/dllmain.c;
+   kernel32_vista: DllMain.c). Code shared by both DLLs uses it instead of
+   GetModuleHandleW, which takes the loader lock (LdrGetDllHandleEx): callers such
+   as the UCRT call these functions while holding their own locks, which a new
+   thread acquires under the loader lock (DLL_THREAD_ATTACH). That lock order
+   inversion deadlocks. */
+extern HMODULE kernel32_handle;
